@@ -289,7 +289,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 行き：1回目予定を上部、2回目予定を下部
 const ITEMS_GO = [
   // --- 1回目予定 ---
   { rank: 1,  name: 'スネア（＋脚）',                section: '🟡 1回目に運ぶ', trip: 1 },
@@ -306,31 +305,38 @@ const ITEMS_GO = [
   { rank: 12, name: '延長コード',                    section: '🟡 1回目に運ぶ', trip: 1 },
   { rank: 13, name: '合わせシンバル（＋スタンド）',   section: '🟡 1回目に運ぶ', trip: 1 },
   { rank: 14, name: 'ウィンドチャイム（＋スタンド）', section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 15, name: '譜面台（部所有）',               section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 16, name: '譜面隠し',                       section: '🟡 1回目に運ぶ', trip: 1 },
   // --- 2回目予定 ---
-  { rank: 15, name: 'ドラムマット',                  section: '🟣 2回目に運ぶ', trip: 2 },
-  { rank: 16, name: 'ドラムの椅子',                  section: '🟣 2回目に運ぶ', trip: 2 },
-  { rank: 17, name: 'シロフォン',                    section: '🟣 2回目に運ぶ', trip: 2 },
-  { rank: 18, name: 'グロッケン（＋スタンド）',       section: '🟣 2回目に運ぶ', trip: 2 },
-  { rank: 19, name: 'ウッドブロック',                section: '🟣 2回目に運ぶ', trip: 2 },
-  { rank: 20, name: 'アゴゴ',                        section: '🟣 2回目に運ぶ', trip: 2 },
-  { rank: 21, name: 'トライアングル',                section: '🟣 2回目に運ぶ', trip: 2 },
-  { rank: 22, name: 'タンバリン（皮付き）',           section: '🟣 2回目に運ぶ', trip: 2 },
-  { rank: 23, name: 'スティックケース',              section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 17, name: 'ドラムマット',                  section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 18, name: 'ドラムの椅子',                  section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 19, name: 'シロフォン',                    section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 20, name: 'グロッケン（＋スタンド）',       section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 21, name: 'ウッドブロック',                section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 22, name: 'アゴゴ',                        section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 23, name: 'トライアングル',                section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 24, name: 'タンバリン（皮付き）',           section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 25, name: 'スティックケース',              section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 26, name: 'コントラバス（緑）',             section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 27, name: 'コントラバス（茶）',             section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 28, name: 'コントラバス（黒）',             section: '🟣 2回目に運ぶ', trip: 2 },
 ];
 
-// 帰り：優先順位順
 const ITEMS_RETURN = [
-  // --- 行きの2回目グループ（帰りの1回目）---
-  { rank: 15, name: 'ドラムマット',                  section: '🟡 1回目に運ぶ', trip: 1 },
-  { rank: 16, name: 'ドラムの椅子',                  section: '🟡 1回目に運ぶ', trip: 1 },
-  { rank: 17, name: 'シロフォン',                    section: '🟡 1回目に運ぶ', trip: 1 },
-  { rank: 18, name: 'グロッケン（＋スタンド）',       section: '🟡 1回目に運ぶ', trip: 1 },
-  { rank: 19, name: 'ウッドブロック',                section: '🟡 1回目に運ぶ', trip: 1 },
-  { rank: 20, name: 'アゴゴ',                        section: '🟡 1回目に運ぶ', trip: 1 },
-  { rank: 21, name: 'トライアングル',                section: '🟡 1回目に運ぶ', trip: 1 },
-  { rank: 22, name: 'タンバリン（皮付き）',           section: '🟡 1回目に運ぶ', trip: 1 },
-  { rank: 23, name: 'スティックケース',              section: '🟡 1回目に運ぶ', trip: 1 },
-  // --- 行きの1回目グループ（帰りの2回目）---
+  // --- コントラバス（帰りの1回目）---
+  { rank: 26, name: 'コントラバス（緑）',             section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 27, name: 'コントラバス（茶）',             section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 28, name: 'コントラバス（黒）',             section: '🟡 1回目に運ぶ', trip: 1 },
+  // --- 帰りの2回目（残り全部）---
+  { rank: 17, name: 'ドラムマット',                  section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 18, name: 'ドラムの椅子',                  section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 19, name: 'シロフォン',                    section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 20, name: 'グロッケン（＋スタンド）',       section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 21, name: 'ウッドブロック',                section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 22, name: 'アゴゴ',                        section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 23, name: 'トライアングル',                section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 24, name: 'タンバリン（皮付き）',           section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 25, name: 'スティックケース',              section: '🟣 2回目に運ぶ', trip: 2 },
   { rank: 1,  name: 'スネア（＋脚）',                section: '🟣 2回目に運ぶ', trip: 2 },
   { rank: 2,  name: 'ライドシンバル',                section: '🟣 2回目に運ぶ', trip: 2 },
   { rank: 3,  name: 'クラッシュシンバル',             section: '🟣 2回目に運ぶ', trip: 2 },
@@ -345,6 +351,8 @@ const ITEMS_RETURN = [
   { rank: 12, name: '延長コード',                    section: '🟣 2回目に運ぶ', trip: 2 },
   { rank: 13, name: '合わせシンバル（＋スタンド）',   section: '🟣 2回目に運ぶ', trip: 2 },
   { rank: 14, name: 'ウィンドチャイム（＋スタンド）', section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 15, name: '譜面台（部所有）',               section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 16, name: '譜面隠し',                       section: '🟣 2回目に運ぶ', trip: 2 },
 ];
 
 let currentPage = 'go';
