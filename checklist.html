@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>パーカッション 運搬チェックリスト</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f8f8;
+    --border: #e8e8e8;
+    --border-strong: #d0d0d0;
+    --text: #1a1a1a;
+    --text-muted: #888;
+    --accent-go: #2563eb;
+    --accent-go-light: #eff6ff;
+    --accent-return: #16a34a;
+    --accent-return-light: #f0fdf4;
+    --check1: #f59e0b;
+    --check2: #8b5cf6;
+    --direct: #ef4444;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* Header */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px 0;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .app-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .sync-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .sync-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ccc;
+    transition: background 0.3s;
+  }
+  .sync-dot.synced { background: #22c55e; }
+  .sync-dot.syncing { background: #f59e0b; animation: pulse 1s infinite; }
+  .sync-dot.error { background: #ef4444; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Page tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: none;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .tab.active-go {
+    color: var(--accent-go);
+    border-bottom-color: var(--accent-go);
+  }
+  .tab.active-return {
+    color: var(--accent-return);
+    border-bottom-color: var(--accent-return);
+  }
+
+  /* Trip selector */
+  .trip-selector {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .trip-btn {
+    flex: 1;
+    padding: 8px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--bg);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text-muted);
+  }
+
+  .trip-btn.active-go {
+    background: var(--accent-go-light);
+    border-color: var(--accent-go);
+    color: var(--accent-go);
+  }
+  .trip-btn.active-return {
+    background: var(--accent-return-light);
+    border-color: var(--accent-return);
+    color: var(--accent-return);
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    padding: 10px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    background: var(--accent-go);
+  }
+  .page-return .progress-fill { background: var(--accent-return); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 12px;
+    padding: 8px 16px;
+    font-size: 10px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+  }
+
+  /* List */
+  .list {
+    padding: 8px 16px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 14px 0 6px;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 12px;
+    margin-bottom: 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    transition: all 0.15s;
+    cursor: default;
+  }
+
+  .item:hover { background: var(--surface); }
+
+  .item.direct-checked {
+    background: #fff7f7;
+    border-color: #fca5a5;
+  }
+
+  .item-rank {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    width: 20px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .item-name {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .item-name.crossed {
+    text-decoration: line-through;
+    color: var(--text-muted);
+  }
+
+  .checks {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .check-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .check-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  input[type="checkbox"] {
+    appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border-strong);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .cb-1:checked {
+    background: var(--check1);
+    border-color: var(--check1);
+    color: white;
+  }
+  .cb-1:checked::after { color: white; }
+
+  .cb-2:checked {
+    background: var(--check2);
+    border-color: var(--check2);
+    color: white;
+  }
+  .cb-2:checked::after { color: white; }
+
+  .cb-direct {
+    border-color: #fca5a5;
+    background: #fff7f7;
+  }
+  .cb-direct:checked {
+    background: var(--direct);
+    border-color: var(--direct);
+  }
+  .cb-direct:checked::after { color: white; }
+  .cb-direct { cursor: not-allowed; }
+
+  /* Reset button */
+  .reset-wrap {
+    padding: 20px 16px 0;
+    text-align: center;
+  }
+
+  .reset-btn {
+    padding: 8px 20px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 20px;
+    background: var(--bg);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { border-color: var(--direct); color: var(--direct); }
+
+  /* Setup modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal {
+    background: var(--bg);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+
+  .modal h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .modal p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  .modal input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 8px;
+    outline: none;
+  }
+  .modal input:focus { border-color: var(--accent-go); }
+
+  .modal-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--accent-go);
+    color: white;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .modal-note {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 400px) {
+    .item-name { font-size: 12px; }
+    .item { padding: 9px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Setup Modal -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal">
+    <h2>🔧 初回セットアップ</h2>
+    <p>チェック内容を複数デバイスで同期するために、GitHub Gist を使用します。<br>以下の情報を入力してください（ローカルに保存されます）。</p>
+    <input type="password" id="inputToken" placeholder="GitHub Personal Access Token (gist権限)" />
+    <input type="text" id="inputGistId" placeholder="Gist ID（既存のGistがある場合）" />
+    <button class="modal-btn" onclick="saveSetup()">保存して開始</button>
+    <p class="modal-note">
+      Personal Access Token は GitHub → Settings → Developer settings → Personal access tokens で作成してください。<br>
+      Gist IDが空の場合は自動で新規作成します。<br>
+      トークンはこのブラウザにのみ保存され、外部に送信されません（Gist APIへのリクエストのみに使用）。
+    </p>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">🥁 運搬チェックリスト</div>
+    <div class="sync-status">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncLabel">未接続</span>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active-go" id="tabGo" onclick="switchPage('go')">🚗 行き</button>
+    <button class="tab" id="tabReturn" onclick="switchPage('return')">🏠 帰り</button>
+  </div>
+</div>
+
+<!-- Trip selector -->
+<div class="trip-selector">
+  <button class="trip-btn active-go" id="trip1Btn" onclick="switchTrip(1)">1回目</button>
+  <button class="trip-btn" id="trip2Btn" onclick="switchTrip(2)">2回目</button>
+</div>
+
+<!-- Progress -->
+<div class="progress-wrap" id="progressWrap">
+  <div class="progress-label">
+    <span id="progressText">0 / 0 完了</span>
+    <span id="progressPct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--check1)"></div>1回目チェック</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--check2)"></div>2回目チェック</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--direct)"></div>直接チェック（自動）</div>
+</div>
+
+<!-- List container -->
+<div class="list" id="listContainer"></div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" onclick="confirmReset()">現在のページをリセット</button>
+</div>
+
+<script>
+// ===== DATA =====
+const ITEMS_GO = [
+  { rank: 1, name: 'ベーデー（＋ペダル、毛布）', section: '車必須・大型' },
+  { rank: 2, name: 'フロアタム', section: '車必須・大型' },
+  { rank: 3, name: 'シロフォン', section: '車必須・大型' },
+  { rank: 4, name: 'グロッケン（＋スタンド）', section: '車必須・大型' },
+  { rank: 5, name: 'キーボード大（＋スタンド）', section: '車必須・大型' },
+  { rank: 6, name: 'キーボード小（＋スタンド）', section: '車必須・大型' },
+  { rank: 7, name: 'アンプ', section: '車必須・大型' },
+  { rank: 8, name: 'ドラムマット', section: '優先・中型' },
+  { rank: 9, name: 'ハイタム', section: '優先・中型' },
+  { rank: 10, name: 'ロータム', section: '優先・中型' },
+  { rank: 11, name: 'スネア（＋脚）', section: '優先・中型' },
+  { rank: 12, name: 'ハイハット', section: '次点・スタンド類' },
+  { rank: 13, name: 'ライドシンバル', section: '次点・スタンド類' },
+  { rank: 14, name: 'クラッシュシンバル', section: '次点・スタンド類' },
+  { rank: 15, name: '合わせシンバル（＋スタンド）', section: '次点・スタンド類' },
+  { rank: 16, name: 'ウィンドチャイム（＋スタンド）', section: '次点・スタンド類' },
+  { rank: 17, name: 'ウッドブロック', section: '次点・スタンド類' },
+  { rank: 18, name: 'アゴゴ', section: '次点・スタンド類' },
+  { rank: 19, name: 'ドラムの椅子', section: '小型・手持ち可' },
+  { rank: 20, name: 'スティックケース', section: '小型・手持ち可' },
+  { rank: 21, name: '譜面台×5', section: '小型・手持ち可' },
+  { rank: 22, name: '椅子×3', section: '小型・手持ち可' },
+  { rank: 23, name: 'タンバリン（皮付き）', section: '小型・手持ち可' },
+  { rank: 24, name: 'トライアングル', section: '小型・手持ち可' },
+  { rank: 25, name: '延長コード', section: '小型・手持ち可' },
+];
+
+const ITEMS_RETURN = [
+  { rank: 1, name: 'ベーデー（＋ペダル、毛布）', section: '車必須・大型' },
+  { rank: 2, name: 'フロアタム', section: '車必須・大型' },
+  { rank: 3, name: 'シロフォン', section: '車必須・大型' },
+  { rank: 4, name: 'グロッケン（＋スタンド）', section: '車必須・大型' },
+  { rank: 5, name: 'キーボード大（＋スタンド）', section: '車必須・大型' },
+  { rank: 6, name: 'キーボード小（＋スタンド）', section: '車必須・大型' },
+  { rank: 7, name: 'アンプ', section: '車必須・大型' },
+  { rank: 8, name: 'ドラムマット', section: '優先・中型' },
+  { rank: 9, name: 'ハイタム', section: '優先・中型' },
+  { rank: 10, name: 'ロータム', section: '優先・中型' },
+  { rank: 11, name: 'スネア（＋脚）', section: '優先・中型' },
+  { rank: 12, name: 'ハイハット', section: '次点・スタンド類' },
+  { rank: 13, name: 'ライドシンバル', section: '次点・スタンド類' },
+  { rank: 14, name: 'クラッシュシンバル', section: '次点・スタンド類' },
+  { rank: 15, name: '合わせシンバル（＋スタンド）', section: '次点・スタンド類' },
+  { rank: 16, name: 'ウィンドチャイム（＋スタンド）', section: '次点・スタンド類' },
+  { rank: 17, name: 'ウッドブロック', section: '次点・スタンド類' },
+  { rank: 18, name: 'アゴゴ', section: '次点・スタンド類' },
+  { rank: 19, name: 'ドラムの椅子', section: '小型・手持ち可' },
+  { rank: 20, name: 'スティックケース', section: '小型・手持ち可' },
+  { rank: 21, name: '譜面台×5', section: '小型・手持ち可' },
+  { rank: 22, name: '椅子×3', section: '小型・手持ち可' },
+  { rank: 23, name: 'タンバリン（皮付き）', section: '小型・手持ち可' },
+  { rank: 24, name: 'トライアングル', section: '小型・手持ち可' },
+  { rank: 25, name: '延長コード', section: '小型・手持ち可' },
+];
+
+// ===== STATE =====
+let currentPage = 'go';
+let currentTrip = 1;
+// checks[page][trip][rank] = boolean
+let checks = {
+  go:     { 1: {}, 2: {} },
+  return: { 1: {}, 2: {} }
+};
+
+let gistId = '';
+let ghToken = '';
+let syncTimer = null;
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  ghToken = localStorage.getItem('gh_token') || '';
+  gistId  = localStorage.getItem('gist_id')  || '';
+
+  if (!ghToken) {
+    document.getElementById('setupModal').classList.remove('hidden');
+  } else {
+    document.getElementById('setupModal').classList.add('hidden');
+    loadFromGist();
+  }
+});
+
+// ===== SETUP =====
+async function saveSetup() {
+  const token = document.getElementById('inputToken').value.trim();
+  const gid   = document.getElementById('inputGistId').value.trim();
+  if (!token) { alert('トークンを入力してください'); return; }
+
+  ghToken = token;
+  localStorage.setItem('gh_token', token);
+
+  if (gid) {
+    gistId = gid;
+    localStorage.setItem('gist_id', gid);
+    document.getElementById('setupModal').classList.add('hidden');
+    await loadFromGist();
+  } else {
+    // Create new Gist
+    setSyncStatus('syncing', '作成中…');
+    const res = await fetch('https://api.github.com/gists', {
+      method: 'POST',
+      headers: { Authorization: `token ${ghToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        description: 'パーカッション 運搬チェックリスト',
+        public: false,
+        files: { 'checklist.json': { content: JSON.stringify(checks) } }
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      gistId = data.id;
+      localStorage.setItem('gist_id', gistId);
+      setSyncStatus('synced', '同期済み');
+      document.getElementById('setupModal').classList.add('hidden');
+      renderList();
+    } else {
+      setSyncStatus('error', 'エラー');
+      alert('Gist作成に失敗しました。トークンを確認してください。');
+    }
+  }
+}
+
+// ===== GIST SYNC =====
+async function loadFromGist() {
+  if (!ghToken || !gistId) { renderList(); return; }
+  setSyncStatus('syncing', '読み込み中…');
+  try {
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { Authorization: `token ${ghToken}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const content = data.files['checklist.json']?.content;
+      if (content) {
+        const parsed = JSON.parse(content);
+        // Merge to ensure structure
+        ['go','return'].forEach(p => {
+          [1,2].forEach(t => {
+            if (parsed[p]?.[t]) checks[p][t] = parsed[p][t];
+          });
+        });
+      }
+      setSyncStatus('synced', '同期済み');
+    } else {
+      setSyncStatus('error', 'エラー');
+    }
+  } catch(e) {
+    setSyncStatus('error', 'エラー');
+  }
+  renderList();
+}
+
+async function saveToGist() {
+  if (!ghToken || !gistId) return;
+  setSyncStatus('syncing', '保存中…');
+  try {
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: 'PATCH',
+      headers: { Authorization: `token ${ghToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        files: { 'checklist.json': { content: JSON.stringify(checks) } }
+      })
+    });
+    if (res.ok) setSyncStatus('synced', '同期済み');
+    else setSyncStatus('error', 'エラー');
+  } catch(e) {
+    setSyncStatus('error', 'エラー');
+  }
+}
+
+function scheduleSave() {
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(saveToGist, 800);
+}
+
+// ===== UI HELPERS =====
+function setSyncStatus(state, label) {
+  const dot = document.getElementById('syncDot');
+  const lbl = document.getElementById('syncLabel');
+  dot.className = 'sync-dot ' + state;
+  lbl.textContent = label;
+}
+
+function switchPage(page) {
+  currentPage = page;
+  document.getElementById('tabGo').className = 'tab' + (page === 'go' ? ' active-go' : '');
+  document.getElementById('tabReturn').className = 'tab' + (page === 'return' ? ' active-return' : '');
+  updateTripButtons();
+  renderList();
+}
+
+function switchTrip(trip) {
+  currentTrip = trip;
+  updateTripButtons();
+  renderList();
+}
+
+function updateTripButtons() {
+  const cls = currentPage === 'go' ? 'active-go' : 'active-return';
+  document.getElementById('trip1Btn').className = 'trip-btn' + (currentTrip === 1 ? ' ' + cls : '');
+  document.getElementById('trip2Btn').className = 'trip-btn' + (currentTrip === 2 ? ' ' + cls : '');
+}
+
+// ===== RENDER =====
+function renderList() {
+  const items = currentPage === 'go' ? ITEMS_GO : ITEMS_RETURN;
+  const container = document.getElementById('listContainer');
+  container.innerHTML = '';
+
+  let lastSection = '';
+  items.forEach(item => {
+    if (item.section !== lastSection) {
+      const sec = document.createElement('div');
+      sec.className = 'section-label';
+      sec.textContent = item.section;
+      container.appendChild(sec);
+      lastSection = item.section;
+    }
+
+    const c1 = checks[currentPage][1][item.rank] || false;
+    const c2 = checks[currentPage][2][item.rank] || false;
+    const isDirect = c1 || c2;
+
+    const div = document.createElement('div');
+    div.className = 'item' + (isDirect ? ' direct-checked' : '');
+    div.id = `item-${item.rank}`;
+
+    div.innerHTML = `
+      <div class="item-rank">${item.rank}</div>
+      <div class="item-name ${isDirect ? 'crossed' : ''}">${item.name}</div>
+      <div class="checks">
+        <div class="check-wrap">
+          <span class="check-label">1回目</span>
+          <input type="checkbox" class="cb-1" data-rank="${item.rank}" data-trip="1" ${c1 ? 'checked' : ''}>
+        </div>
+        <div class="check-wrap">
+          <span class="check-label">2回目</span>
+          <input type="checkbox" class="cb-2" data-rank="${item.rank}" data-trip="2" ${c2 ? 'checked' : ''}>
+        </div>
+        <div class="check-wrap">
+          <span class="check-label">直接</span>
+          <input type="checkbox" class="cb-direct" ${isDirect ? 'checked' : ''} disabled>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+
+  // Attach events
+  container.querySelectorAll('input[type="checkbox"]:not(.cb-direct)').forEach(cb => {
+    cb.addEventListener('change', onCheck);
+  });
+
+  updateProgress(items);
+}
+
+function onCheck(e) {
+  const rank = parseInt(e.target.dataset.rank);
+  const trip = parseInt(e.target.dataset.trip);
+  checks[currentPage][trip][rank] = e.target.checked;
+
+  // Update direct
+  const c1 = checks[currentPage][1][rank] || false;
+  const c2 = checks[currentPage][2][rank] || false;
+  const isDirect = c1 || c2;
+
+  const itemEl = document.getElementById(`item-${rank}`);
+  if (itemEl) {
+    itemEl.className = 'item' + (isDirect ? ' direct-checked' : '');
+    const nameEl = itemEl.querySelector('.item-name');
+    if (nameEl) nameEl.className = 'item-name' + (isDirect ? ' crossed' : '');
+    const directCb = itemEl.querySelector('.cb-direct');
+    if (directCb) directCb.checked = isDirect;
+  }
+
+  const items = currentPage === 'go' ? ITEMS_GO : ITEMS_RETURN;
+  updateProgress(items);
+  scheduleSave();
+}
+
+function updateProgress(items) {
+  const total = items.length;
+  let done = 0;
+  items.forEach(item => {
+    const c1 = checks[currentPage][1][item.rank] || false;
+    const c2 = checks[currentPage][2][item.rank] || false;
+    if (c1 || c2) done++;
+  });
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('progressText').textContent = `${done} / ${total} 完了`;
+  document.getElementById('progressPct').textContent = `${pct}%`;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function confirmReset() {
+  if (!confirm(`「${currentPage === 'go' ? '行き' : '帰り'}」のチェックをすべてリセットしますか？`)) return;
+  checks[currentPage] = { 1: {}, 2: {} };
+  renderList();
+  scheduleSave();
+}
+</script>
+</body>
+</html>
