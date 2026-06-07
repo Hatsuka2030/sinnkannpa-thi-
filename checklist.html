@@ -472,6 +472,7 @@
 </div>
 
 <script>
+  const isViewMode = new URLSearchParams(window.location.search).get('view') === 'true';
 // ===== DATA =====
 const ITEMS_GO = [
   { rank: 1, name: 'ベーデー（＋ペダル、毛布）', section: '車必須・大型' },
@@ -706,11 +707,11 @@ function renderList() {
       <div class="checks">
         <div class="check-wrap">
           <span class="check-label">1回目</span>
-          <input type="checkbox" class="cb-1" data-rank="${item.rank}" data-trip="1" ${c1 ? 'checked' : ''}>
+          <input type="checkbox" class="cb-1" data-rank="${item.rank}" data-trip="1" ${c1 ? 'checked' : ''} ${isViewMode ? 'disabled' : ''}>
         </div>
         <div class="check-wrap">
           <span class="check-label">2回目</span>
-          <input type="checkbox" class="cb-2" data-rank="${item.rank}" data-trip="2" ${c2 ? 'checked' : ''}>
+          <input type="checkbox" class="cb-2" data-rank="${item.rank}" data-trip="2" ${c2 ? 'checked' : ''} ${isViewMode ? 'disabled' : ''}>
         </div>
         <div class="check-wrap">
           <span class="check-label">積んだか</span>
@@ -731,6 +732,7 @@ function renderList() {
 }
 
 function onCheck(e) {
+  if (isViewMode) { e.target.checked = !e.target.checked; return; }
   const rank = parseInt(e.target.dataset.rank);
   const trip = parseInt(e.target.dataset.trip);
   checks[currentPage][trip][rank] = e.target.checked;
