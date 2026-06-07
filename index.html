@@ -417,7 +417,6 @@
     <h2>🔧 初回セットアップ</h2>
     <p>チェック内容を複数デバイスで同期するために、GitHub Gist を使用します。<br>以下の情報を入力してください（ローカルに保存されます）。</p>
     <input type="password" id="inputToken" placeholder="GitHub Personal Access Token (gist権限)" />
-    <input type="text" id="inputGistId" placeholder="Gist ID（既存のGistがある場合）" />
     <button class="modal-btn" onclick="saveSetup()">保存して開始</button>
     <p class="modal-note">
       Personal Access Token は GitHub → Settings → Developer settings → Personal access tokens で作成してください。<br>
@@ -545,10 +544,15 @@ let syncTimer = null;
 
 // ===== INIT =====
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('setupModal').classList.add('hidden');
-  loadFromGist();
-});
+  ghToken = localStorage.getItem('gh_token') || '';
 
+  if (!ghToken) {
+    document.getElementById('setupModal').classList.remove('hidden');
+  } else {
+    document.getElementById('setupModal').classList.add('hidden');
+    loadFromGist();
+  }
+});
 // ===== SETUP =====
 async function saveSetup() {
   const token = document.getElementById('inputToken').value.trim();
