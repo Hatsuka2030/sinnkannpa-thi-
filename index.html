@@ -151,6 +151,9 @@
     padding: 14px 0 6px;
   }
 
+  .section-label.trip1 { color: var(--check1); }
+  .section-label.trip2 { color: var(--check2); }
+
   .item {
     display: flex;
     align-items: center;
@@ -267,7 +270,6 @@
   <button class="reset-btn" onclick="confirmReset()">現在のページをリセット</button>
 </div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -287,45 +289,73 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const ITEMS = [
-  { rank: 1,  name: 'ベーデー（＋ペダル、毛布）',    section: '車必須・大型' },
-  { rank: 2,  name: 'フロアタム',                    section: '車必須・大型' },
-  { rank: 3,  name: 'シロフォン',                    section: '車必須・大型' },
-  { rank: 4,  name: 'グロッケン（＋スタンド）',       section: '車必須・大型' },
-  { rank: 5,  name: 'キーボード大（＋スタンド）',     section: '車必須・大型' },
-  { rank: 6,  name: 'キーボード小（＋スタンド）',     section: '車必須・大型' },
-  { rank: 7,  name: 'アンプ',                        section: '車必須・大型' },
-  { rank: 8,  name: 'ドラムマット',                  section: '優先・中型' },
-  { rank: 9,  name: 'ハイタム',                      section: '優先・中型' },
-  { rank: 10, name: 'ロータム',                      section: '優先・中型' },
-  { rank: 11, name: 'スネア（＋脚）',                section: '優先・中型' },
-  { rank: 12, name: 'ハイハット',                    section: '次点・スタンド類' },
-  { rank: 13, name: 'ライドシンバル',                section: '次点・スタンド類' },
-  { rank: 14, name: 'クラッシュシンバル',             section: '次点・スタンド類' },
-  { rank: 15, name: '合わせシンバル（＋スタンド）',   section: '次点・スタンド類' },
-  { rank: 16, name: 'ウィンドチャイム（＋スタンド）', section: '次点・スタンド類' },
-  { rank: 17, name: 'ウッドブロック',                section: '次点・スタンド類' },
-  { rank: 18, name: 'アゴゴ',                        section: '次点・スタンド類' },
-  { rank: 19, name: 'ドラムの椅子',                  section: '小型・手持ち可' },
-  { rank: 20, name: 'スティックケース',              section: '小型・手持ち可' },
-  { rank: 21, name: '譜面台×5',                     section: '小型・手持ち可' },
-  { rank: 22, name: '椅子×3',                       section: '小型・手持ち可' },
-  { rank: 23, name: 'タンバリン（皮付き）',           section: '小型・手持ち可' },
-  { rank: 24, name: 'トライアングル',                section: '小型・手持ち可' },
-  { rank: 25, name: '延長コード',                    section: '小型・手持ち可' },
+// 行き：1回目予定を上部、2回目予定を下部
+const ITEMS_GO = [
+  // --- 1回目予定 ---
+  { rank: 1,  name: 'スネア（＋脚）',                section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 2,  name: 'ライドシンバル',                section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 3,  name: 'クラッシュシンバル',             section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 4,  name: 'ハイハット',                    section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 5,  name: 'フロアタム',                    section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 6,  name: 'ハイタム',                      section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 7,  name: 'ロータム',                      section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 8,  name: 'ベーデー（＋ペダル、毛布）',    section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 9,  name: 'キーボード大（＋スタンド）',     section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 10, name: 'キーボード小（＋スタンド）',     section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 11, name: 'アンプ',                        section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 12, name: '延長コード',                    section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 13, name: '合わせシンバル（＋スタンド）',   section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 14, name: 'ウィンドチャイム（＋スタンド）', section: '🟡 1回目に運ぶ', trip: 1 },
+  // --- 2回目予定 ---
+  { rank: 15, name: 'ドラムマット',                  section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 16, name: 'ドラムの椅子',                  section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 17, name: 'シロフォン',                    section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 18, name: 'グロッケン（＋スタンド）',       section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 19, name: 'ウッドブロック',                section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 20, name: 'アゴゴ',                        section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 21, name: 'トライアングル',                section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 22, name: 'タンバリン（皮付き）',           section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 23, name: 'スティックケース',              section: '🟣 2回目に運ぶ', trip: 2 },
+];
+
+// 帰り：優先順位順
+const ITEMS_RETURN = [
+  // --- 行きの2回目グループ（帰りの1回目）---
+  { rank: 15, name: 'ドラムマット',                  section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 16, name: 'ドラムの椅子',                  section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 17, name: 'シロフォン',                    section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 18, name: 'グロッケン（＋スタンド）',       section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 19, name: 'ウッドブロック',                section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 20, name: 'アゴゴ',                        section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 21, name: 'トライアングル',                section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 22, name: 'タンバリン（皮付き）',           section: '🟡 1回目に運ぶ', trip: 1 },
+  { rank: 23, name: 'スティックケース',              section: '🟡 1回目に運ぶ', trip: 1 },
+  // --- 行きの1回目グループ（帰りの2回目）---
+  { rank: 1,  name: 'スネア（＋脚）',                section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 2,  name: 'ライドシンバル',                section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 3,  name: 'クラッシュシンバル',             section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 4,  name: 'ハイハット',                    section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 5,  name: 'フロアタム',                    section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 6,  name: 'ハイタム',                      section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 7,  name: 'ロータム',                      section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 8,  name: 'ベーデー（＋ペダル、毛布）',    section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 9,  name: 'キーボード大（＋スタンド）',     section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 10, name: 'キーボード小（＋スタンド）',     section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 11, name: 'アンプ',                        section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 12, name: '延長コード',                    section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 13, name: '合わせシンバル（＋スタンド）',   section: '🟣 2回目に運ぶ', trip: 2 },
+  { rank: 14, name: 'ウィンドチャイム（＋スタンド）', section: '🟣 2回目に運ぶ', trip: 2 },
 ];
 
 let currentPage = 'go';
 let currentTrip = 1;
 let checks = { go: { 1: {}, 2: {} }, return: { 1: {}, 2: {} } };
-let isSyncing = false;
 
 function setSyncStatus(state, label) {
   document.getElementById('syncDot').className = 'sync-dot ' + state;
   document.getElementById('syncLabel').textContent = label;
 }
 
-// Firebaseからリアルタイム同期
 const dbRef = ref(db, 'checks');
 onValue(dbRef, (snapshot) => {
   const data = snapshot.val();
@@ -338,9 +368,7 @@ onValue(dbRef, (snapshot) => {
   }
   setSyncStatus('synced', '同期済み');
   renderList();
-}, (error) => {
-  setSyncStatus('error', 'エラー');
-});
+}, () => setSyncStatus('error', 'エラー'));
 
 let saveTimer = null;
 function scheduleSave() {
@@ -374,14 +402,16 @@ function updateTripButtons() {
 }
 
 function renderList() {
+  const items = currentPage === 'go' ? ITEMS_GO : ITEMS_RETURN;
   const container = document.getElementById('listContainer');
   container.innerHTML = '';
   let lastSection = '';
 
-  ITEMS.forEach(item => {
+  items.forEach(item => {
     if (item.section !== lastSection) {
       const sec = document.createElement('div');
-      sec.className = 'section-label';
+      const tripClass = item.trip === 1 ? 'trip1' : item.trip === 2 ? 'trip2' : '';
+      sec.className = 'section-label ' + tripClass;
       sec.textContent = item.section;
       container.appendChild(sec);
       lastSection = item.section;
@@ -420,7 +450,7 @@ function renderList() {
     cb.addEventListener('change', onCheck);
   });
 
-  updateProgress();
+  updateProgress(items);
 }
 
 function onCheck(e) {
@@ -440,16 +470,17 @@ function onCheck(e) {
     itemEl.querySelector('.cb-direct').checked = isDirect;
   }
 
-  updateProgress();
+  const items = currentPage === 'go' ? ITEMS_GO : ITEMS_RETURN;
+  updateProgress(items);
   scheduleSave();
 }
 
-function updateProgress() {
+function updateProgress(items) {
   let done = 0;
-  ITEMS.forEach(item => {
+  items.forEach(item => {
     if (checks[currentPage][1][item.rank] || checks[currentPage][2][item.rank]) done++;
   });
-  const total = ITEMS.length;
+  const total = items.length;
   const pct = Math.round(done / total * 100);
   document.getElementById('progressText').textContent = `${done} / ${total} 完了`;
   document.getElementById('progressPct').textContent = `${pct}%`;
@@ -461,6 +492,7 @@ function updateProgress() {
 window.confirmReset = function() {
   if (!confirm(`「${currentPage === 'go' ? '行き' : '帰り'}」のチェックをすべてリセットしますか？`)) return;
   checks[currentPage] = { 1: {}, 2: {} };
+  const items = currentPage === 'go' ? ITEMS_GO : ITEMS_RETURN;
   renderList();
   scheduleSave();
 };
