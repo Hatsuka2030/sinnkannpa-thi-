@@ -545,15 +545,8 @@ let syncTimer = null;
 
 // ===== INIT =====
 window.addEventListener('DOMContentLoaded', () => {
-  ghToken = localStorage.getItem('gh_token') || '';
-  gistId  = localStorage.getItem('gist_id')  || '';
-
-  if (!ghToken) {
-    document.getElementById('setupModal').classList.remove('hidden');
-  } else {
-    document.getElementById('setupModal').classList.add('hidden');
-    loadFromGist();
-  }
+  document.getElementById('setupModal').classList.add('hidden');
+  loadFromGist();
 });
 
 // ===== SETUP =====
